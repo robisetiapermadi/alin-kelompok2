@@ -1,9 +1,33 @@
-﻿using System.Configuration.Assemblies;
-
-namespace spl_nonhomogen;
+﻿namespace spl_nonhomogen;
 
 class Program
 {
+
+  static int[,] KonversiToMatriks(int[,] persamaan, int[] konstanta, int banyakVariabel)
+  {
+
+    int[,] hasil = new int[persamaan.Length, banyakVariabel + 1];
+
+    for (int i = 0; i < persamaan.Length; i++)
+    {
+      for (int j = 0; j < banyakVariabel+1; j++)
+      {
+        persamaan[i, j] = int.Parse(Console.ReadLine());
+        if (j == banyakVariabel - 1)
+        {
+          Console.Write("= {0}", konstanta[i]);
+          Console.WriteLine();
+        }
+        else Console.Write("+ ");
+
+      }
+      konstanta[i] = int.Parse(Console.ReadLine());
+    }
+
+
+
+    return hasil;
+  }
 
   static void Main(string[] args)
   {
