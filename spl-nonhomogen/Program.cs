@@ -5,26 +5,22 @@ class Program
   static int[,] KonversiToMatriks(int[,] persamaan, int[] konstanta, int banyakVariabel)
   {
 
-    int[,] hasil = new int[persamaan.Length, banyakVariabel + 1];
+    int kolom = banyakVariabel + 1;
+    int baris = persamaan.GetLength(0);
 
-    for (int i = 0; i < persamaan.Length; i++)
+    int[,] hasil = new int[baris, kolom];
+
+
+
+    for (int i = 0; i < baris; i++)
     {
-      for (int j = 0; j < banyakVariabel+1; j++)
+      for (int j = 0; j < kolom; j++)
       {
-        persamaan[i, j] = int.Parse(Console.ReadLine());
-        if (j == banyakVariabel - 1)
-        {
-          Console.Write("= {0}", konstanta[i]);
-          Console.WriteLine();
-        }
-        else Console.Write("+ ");
+        if (j == kolom - 1) hasil[i, j] = konstanta[i];
+        else hasil[i, j] = persamaan[i, j];
 
       }
-      konstanta[i] = int.Parse(Console.ReadLine());
     }
-
-
-
     return hasil;
   }
 
@@ -81,7 +77,9 @@ class Program
       }
     }
 
+    int[,] matriksAugmented = new int[banyakPersamaan, banyakVariabel + 1];
 
+    matriksAugmented = KonversiToMatriks(persamaan, konstanta, banyakVariabel);
 
 
   }
