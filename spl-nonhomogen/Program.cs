@@ -2,7 +2,6 @@
 
 class Program
 {
-s
   static int[,] KonversiToMatriks(int[,] persamaan, int[] konstanta, int banyakVariabel)
   {
 
