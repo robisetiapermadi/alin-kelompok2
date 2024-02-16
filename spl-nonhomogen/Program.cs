@@ -112,6 +112,80 @@ class Program
 
   }
 
+
+  static double[] EkstrakSolusiSet(double[,] matriksTereduksi)
+  {
+    int jumlahBaris = matriksTereduksi.GetLength(0);
+    int jumlahKolom = matriksTereduksi.GetLength(1);
+
+    double[] solusiSet = new double[jumlahBaris];
+    for (int baris = 0; baris < jumlahBaris; baris++)
+    {
+      solusiSet[baris] = matriksTereduksi[baris, jumlahKolom - 1];
+    }
+
+    return solusiSet;
+  }
+
+  static void PrintSolusi(double[] solusiSet, int banyakVariabel)
+  {
+    Console.WriteLine("Solution set:");
+
+    for (int i = 0; i < banyakVariabel - 1; i++)
+    {
+      Console.Write("x");
+      Console.Write(char.ConvertFromUtf32(int.Parse("208" + (i + 1), System.Globalization.NumberStyles.HexNumber)));
+      Console.Write($" = {solusiSet[i]}, ");
+    }
+
+    Console.Write("x");
+    Console.Write(char.ConvertFromUtf32(int.Parse("208" + (banyakVariabel), System.Globalization.NumberStyles.HexNumber)));
+    Console.WriteLine($" = {solusiSet[banyakVariabel - 1]}, ");
+  }
+
+  static int[] HitungRankDariMatriksTereduksi(double[,] matriksTereduksi){
+    int jumlahBaris = matriksTereduksi.GetLength(0);
+    int jumlahKolom = matriksTereduksi.GetLength(1);
+
+    int[] rank = new int[2];
+    
+    rank[0] = jumlahBaris;
+    rank[1] = jumlahBaris;
+    
+    int temp = 0;
+
+
+    //hitung rank(A|B)
+    for (int baris=0; baris< jumlahBaris; baris++){
+      temp = 0;
+      for (int kolom = 0; kolom<jumlahKolom; kolom++){
+        if (matriksTereduksi[baris, kolom]!=0) continue;
+        
+        else if (matriksTereduksi[baris, kolom]==0)temp++;
+        
+        if (temp==jumlahKolom) rank[0]--;
+      }
+    }
+
+    //hitung rank(A)
+    for (int baris = 0; baris < jumlahBaris; baris++)
+    {
+      temp = 0;
+      for (int kolom = 0; kolom < jumlahKolom-1; kolom++)
+      {
+        if (matriksTereduksi[baris, kolom] != 0) continue;
+
+        else if (matriksTereduksi[baris, kolom] == 0) temp++;
+
+        if (temp == jumlahKolom-1) rank[1]--;
+      }
+    }
+
+    return rank;
+  }
+
+
+
   static void Main(string[] args)
   {
     int banyakPersamaan, banyakVariabel;
@@ -168,14 +242,54 @@ class Program
 
     matriksAugmented = KonversiToMatriks(persamaan, konstanta, banyakVariabel);
 
+    Console.WriteLine("\n-------------------------------------------------------------\n");
+
     Console.WriteLine("Matriks Augmented: ");
     PrintMatrix(matriksAugmented);
 
+    Console.WriteLine("\n-------------------------------------------------------------\n");
 
     double[,] matriksReduksi = EliminasiGaussJordan(matriksAugmented);
 
-    Console.WriteLine("Matriks Reduksi: ");
+    Console.WriteLine("Matriks Tereduksi: ");
     PrintMatrix(matriksReduksi);
+
+    Console.WriteLine("\n-------------------------------------------------------------\n");
+
+    int rankA, rankB;
+
+    rankA = HitungRankDariMatriksTereduksi(matriksReduksi)[1];
+    rankB = HitungRankDariMatriksTereduksi(matriksReduksi)[0];
+
+    Console.WriteLine("Nilai Rank: ");
+    Console.WriteLine("R(A) = {0}",rankA);
+    Console.WriteLine("R(A|B) = {0}",rankB);
+
+
+    double[] solusiSet = EkstrakSolusiSet(matriksReduksi);
+
+    Console.WriteLine("\n-------------------------------------------------------------\n");
+
+    Console.WriteLine("Penyelesaian: ");
+
+    if(rankA!=rankB){
+      Console.WriteLine("Karena R(A)!=R(A|B), maka Sistem Persamaan Linear tersebut tidak punya jawaban");
+    }
+
+    else if (rankA==rankB){
+      if(rankA<banyakVariabel){
+        Console.WriteLine("Karena R(A)=R(A|B) dan R<N, maka Sistem Persamaan Linear tersebut mempunyai banyak jawaban");
+      }
+      else if (rankA==banyakVariabel){
+        Console.WriteLine("Karena R(A)=R(A|B) dan R=N, maka Sistem Persamaan Linear tersebut mempunyai jawaban unik");
+
+        PrintSolusi(solusiSet, banyakVariabel);
+      }
+    }
+
+    
+    //PrintSolusi(solusiSet);
+
 
   }
 
