@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "spl-nonhomogen", "spl-nonhomogen\spl-nonhomogen.csproj", "{B726B8FB-0395-4FB2-B007-D259CC18235F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kombinasi-vektor_dimensi_basis", "kombinasi-vektor_dimensi_basis\kombinasi-vektor_dimensi_basis.csproj", "{FDBB5889-DCB1-4A03-A7FD-F74F92F46B26}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{B726B8FB-0395-4FB2-B007-D259CC18235F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B726B8FB-0395-4FB2-B007-D259CC18235F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B726B8FB-0395-4FB2-B007-D259CC18235F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDBB5889-DCB1-4A03-A7FD-F74F92F46B26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDBB5889-DCB1-4A03-A7FD-F74F92F46B26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDBB5889-DCB1-4A03-A7FD-F74F92F46B26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDBB5889-DCB1-4A03-A7FD-F74F92F46B26}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
