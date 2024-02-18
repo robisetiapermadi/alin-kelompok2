@@ -3,6 +3,79 @@
 class Program
 {
 
+  static void PrintSolusi(double[] solusiSet, int banyakVariabel)
+  {
+    Console.WriteLine("Penyelesaian:");
+
+    for (int i = 0; i < banyakVariabel - 1; i++)
+    {
+      Console.Write("k");
+      Console.Write(char.ConvertFromUtf32(int.Parse("208" + (i + 1), System.Globalization.NumberStyles.HexNumber)));
+      Console.Write($" = {solusiSet[i]}, ");
+    }
+
+    Console.Write("k");
+    Console.Write(char.ConvertFromUtf32(int.Parse("208" + (banyakVariabel), System.Globalization.NumberStyles.HexNumber)));
+    Console.WriteLine($" = {solusiSet[banyakVariabel - 1]}, ");
+  }
+
+    static void PrintMatrix(double[,] matrix)
+  {
+    int jumlahBaris = matrix.GetLength(0);
+    int jumlahKolom = matrix.GetLength(1);
+
+    for (int i = 0; i < jumlahBaris; i++)
+    {
+      Console.Write("(");
+      for (int j = 0; j < jumlahKolom; j++)
+      {
+        Console.Write(matrix[i, j] + "\t");
+      }
+      Console.WriteLine(")");
+    }
+  }
+
+static int[] HitungRankDariMatriksTereduksi(double[,] matriksTereduksi){
+    int jumlahBaris = matriksTereduksi.GetLength(0);
+    int jumlahKolom = matriksTereduksi.GetLength(1);
+
+    int[] rank = new int[2];
+    
+    rank[0] = jumlahBaris;
+    rank[1] = jumlahBaris;
+    
+    int temp = 0;
+
+
+    //hitung rank(A|B)
+    for (int baris=0; baris< jumlahBaris; baris++){
+      temp = 0;
+      for (int kolom = 0; kolom<jumlahKolom; kolom++){
+        if (matriksTereduksi[baris, kolom]!=0) continue;
+        
+        else if (matriksTereduksi[baris, kolom]==0)temp++;
+        
+        if (temp==jumlahKolom) rank[0]--;
+      }
+    }
+
+    //hitung rank(A)
+    for (int baris = 0; baris < jumlahBaris; baris++)
+    {
+      temp = 0;
+      for (int kolom = 0; kolom < jumlahKolom-1; kolom++)
+      {
+        if (matriksTereduksi[baris, kolom] != 0) continue;
+
+        else if (matriksTereduksi[baris, kolom] == 0) temp++;
+
+        if (temp == jumlahKolom-1) rank[1]--;
+      }
+    }
+
+    return rank;
+  }
+
   static double[,] EliminasiGaussJordan(double[,] matriks)
   {
     int jumlahBaris = matriks.GetLength(0);
@@ -76,56 +149,104 @@ class Program
 
   }
 
-  //fungsi yang mengecek apakah vektorA merupakan kombinasi linear terhadap kumpulanVektor
-  static bool CekKombinasiLinear(int[] vektorA, int[][] kumpulanVektor)
+
+  static double[] EkstrakSolusiSet(double[,] matriksTereduksi)
   {
-    if (vektorA.Length != kumpulanVektor[0].Length)
+    int jumlahBaris = matriksTereduksi.GetLength(0);
+    int jumlahKolom = matriksTereduksi.GetLength(1);
+
+    double[] solusiSet = new double[jumlahBaris];
+    for (int baris = 0; baris < jumlahBaris; baris++)
+    {
+      solusiSet[baris] = matriksTereduksi[baris, jumlahKolom - 1];
+    }
+
+    return solusiSet;
+  }
+
+  //fungsi yang mengecek apakah vektorA merupakan kombinasi linear terhadap kumpulanVektor
+  static bool CekKombinasiLinear(double[] vektorA, double[,] kumpulanVektor)
+  {
+
+    int jumlahBaris;
+    int jumlahKolom;
+    jumlahBaris = kumpulanVektor.GetLength(1);
+    jumlahKolom = kumpulanVektor.GetLength(0);
+
+    double[,] matrix = new double [jumlahBaris, jumlahKolom+1];
+    double[,] matrixTereduksi = new double[jumlahBaris, jumlahKolom+1];
+
+    if (vektorA.Length != kumpulanVektor.GetLength(1))
       return false; // Jika dimensi tidak cocok, bukan kombinasi linear
 
-    double[,] matrix = new int[kumpulanVektor.Length, kumpulanVektor[0].Length + 1];
-    int[,] matrixTereduksi = new int[kumpulanVektor.Length, kumpulanVektor[0].Length + 1];
-
     //mengisi matriks dengan vektor-vektor b dan vektor a sebagai kolom terakhir
-    for (int i = 0; i <=kumpulanVektor.Length; i++)
-    {
-      for (int j = 0; j < kumpulanVektor[i].Length; j++)
-      {
-        matrix[i, j] = kumpulanVektor[i][j];
+    for (int i = 0; i < jumlahBaris; i++){
+      for (int j = 0 ; j < jumlahKolom; j++){
+        matrix[i, j] = kumpulanVektor[j,i];
       }
-      matrix[i, kumpulanVektor[i].Length] = vektorA[i];
+      matrix[i, jumlahKolom] = vektorA[i];
     }
+
+    //PrintMatrix(matrix);
 
     //menggunakan eliminasi Gauss-Jordan untuk mengecek apakah vektor a merupakan kombinasi linear dari vektor b
     matrixTereduksi = EliminasiGaussJordan(matrix);
 
-    //memeriksa apakah semua elemen di kolom terakhir (vektor a) menjadi nol
-    for (int i = 0; i < kumpulanVektor.Length; i++)
+    //PrintMatrix(matrixTereduksi);
+
+    int rankA, rankB;
+
+
+    rankA = HitungRankDariMatriksTereduksi(matrixTereduksi)[1];
+    rankB = HitungRankDariMatriksTereduksi(matrixTereduksi)[0];
+
+    double[] solusiSet = EkstrakSolusiSet(matrixTereduksi);
+
+   if (rankA == rankB)
     {
-      if (matrixTereduksi[i, vektorA.Length] != 0)
-        return false; // Jika ada elemen non-nol, bukan kombinasi linear
+      if (rankA < jumlahKolom)
+      {
+        Console.WriteLine("Karena persamaan terpenuhi, maka vektor yang akan diperiksa merupakan kombinasi linear dari kumpulan vektor. lebih lanjut, ada tak berhingga cara menuliskan vektor sebagai kombinasi linear dari kumpulan vektor tersebut");
+      }
+      else if (rankA == jumlahKolom)
+      {
+        Console.WriteLine("Karena persamaan terpenuhi, maka vektor yang akan diperiksa merupakan kombinasi linear dari kumpulan vektor");
+        PrintSolusi(solusiSet, jumlahKolom);
+      }
+      return true;
     }
+    else {
+      Console.WriteLine("Karena persamaan tidak terpenuhi, maka vektor yang akan diperiksa merupakan bukan kombinasi linear dari kumpulan vektor");
+      return false;
 
-    return true;
+    }
+    
   }
-
 
   static void Main(string[] args)
   {
     //variable a, merupakan vektor yang akan dicek
     //variable b, merupakan himpunan dari beberapa vektor
+    double[] a = { 3, 5, 7 }; // Ganti dengan vektor a 
+    double[,] b = { 
+                    {1, 1, 2 },
+                    {1, 0, 1 },
+                    {2, 1, 3 }
+                  }; // Ganti dengan vektor-vektor
 
-    Console.WriteLine("test");
 
-    int[] a = { 1, 2, 3 }; // Ganti dengan vektor a Anda
-    int[][] b = {
-            new int[] { 1, 2, 3 },
-            new int[] { 4, 5, 6 },
-            new int[] { 7, 8, 9 }
-        }; // Ganti dengan vektor-vektor b Anda
+    Console.WriteLine("Berikut untuk kumpulan vektornya: ");
+    PrintMatrix(b);
+
+    
+    Console.WriteLine("Berikut untuk vektor yang akan diperiksa: ");
+    Console.Write("(");
+    for(int i =0 ; i<a.Length;i++)Console.Write("{0}\t", i);
+    Console.WriteLine(")");
+
+    Console.WriteLine("");
+
 
     bool hasilKombinasiLinear = CekKombinasiLinear(a, b);
-
-    Console.WriteLine("Apakah vektor a merupakan kombinasi linear dari sekumpulan vektor b: ");
-    Console.WriteLine(hasilKombinasiLinear ? "Ya" : "Tidak");
   }
 }
